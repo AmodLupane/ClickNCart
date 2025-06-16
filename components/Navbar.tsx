@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { ShoppingCart, User, Menu, X, LogOut, Search } from "lucide-react";
-
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,24 +12,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-import getUserSession from "@/actions/auth/getUserSession";
-import logoutAction from "@/actions/auth/logout";
-import { useRouter } from "next/navigation";
-import { IUserEntity } from "oneentry/dist/users/usersInterfaces";
-import { log } from "console";
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import getUserSession from '@/actions/auth/getUserSession';
+import logoutAction from '@/actions/auth/logout';
+import { useRouter } from 'next/navigation';
+import { IUserEntity } from 'oneentry/dist/users/usersInterfaces';
+import useCartStore from '@/stores/cartStore';
 
 export default function Navbar() {
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState<IUserEntity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const cartItems = useCartStore((state) => state.cart);
 
   useEffect(() => {
     async function fetchUser() {
@@ -40,7 +37,7 @@ export default function Navbar() {
         if (userData) setUser(userData as IUserEntity);
         setIsLoading(false);
       } catch (error) {
-        console.error({error});
+        console.error({ error });
         setUser(null);
         setIsLoading(false);
       }
@@ -51,15 +48,18 @@ export default function Navbar() {
   // Close navbar when clicking outside of it or any item in it (except search)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node)
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
-      
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    };     
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleLogout = async () => {
@@ -79,69 +79,55 @@ export default function Navbar() {
 
   const handleMenuItemClick = () => {
     setIsMobileMenuOpen(false); // Close mobile menu on item click
-  }
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50">
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+    <nav>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b-2 border-gray-200'>
         <div className='flex items-center justify-between h-16'>
-          
-          {/* Logo Section */}
           <div className='flex items-center'>
-            <Link href='/' className='flex-shrink-0 group'>
-              <span className='text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent group-hover:from-purple-700 group-hover:via-pink-600 group-hover:to-red-600 transition-all duration-300'>
-                ClickNCart
+            <Link href='/' className='flex-shrink-0'>
+              <span className='text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
+                SahandShop
               </span>
             </Link>
           </div>
-
-          {/* Desktop Navigation */}
-          <div className='hidden md:flex items-center space-x-6 flex-1 justify-end max-w-4xl'>
-            
-            {/* Search Bar */}
-            <div className='flex-1 max-w-md mx-8'>
-              <form onSubmit={handleSearch} className="relative">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    type='text'
-                    placeholder='Search products...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='bg-gray-50/80 border-gray-200 pl-10 pr-4 py-2 rounded-full focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all duration-200 hover:bg-gray-100/80'
-                  />
-                </div>
+          <div className='hidden md:flex items-center space-x-4 '>
+            <div className='mr-64'>
+              <form onSubmit={handleSearch}>
+                <Input
+                  type='text'
+                  placeholder='Search products...'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className='bg-gray-100 border-gray-400 min-w-48 '
+                />
               </form>
             </div>
 
-            {/* Cart Button */}
-            <div className="flex items-center">
+            <div>
               <Link href='/cart' onClick={handleMenuItemClick}>
                 <Button
                   size='icon'
-                  className='relative bg-gray-50/80 hover:bg-purple-50 border border-gray-200 hover:border-purple-300 text-gray-600 hover:text-purple-600 transition-all duration-200 rounded-full h-10 w-10'
+                  className='relative bg-transparent hover:bg-transparent cursor-pointer pt-2'
                   variant='ghost'
                 >
-                  <ShoppingCart className='h-5 w-5' />
-                  {/* {cartItems.length > 0 && (
-                    <span className='absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-gradient-to-r from-red-500 to-pink-500 rounded-full min-w-[18px] h-[18px] shadow-lg'>
+                  <ShoppingCart className='h-5 w-5 text-gray-600 hover:text-purple-500' />
+                  {cartItems.length > 0 && (
+                    <span className='absolute top-[-3px] right-[-3px] inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full'>
                       {cartItems.length}
                     </span>
-                  )} */}
+                  )}
                 </Button>
               </Link>
             </div>
-
-            {/* User Authentication Section */}
             {isLoading && (
               <div className='flex items-center'>
-                <div className="animate-pulse">
-                  <Avatar className='h-10 w-10 border-2 border-gray-200'>
-                    <AvatarFallback className='bg-gradient-to-r from-gray-300 to-gray-400'>
-                      <div className="w-4 h-4 bg-gray-400 rounded-full animate-pulse"></div>
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
+                <Avatar className='h-8 w-8 cursor-pointer'>
+                  <AvatarFallback className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white'>
+                    -
+                  </AvatarFallback>
+                </Avatar>
               </div>
             )}
 
@@ -150,10 +136,10 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant='ghost'
-                    className='relative h-10 w-10 rounded-full hover:ring-2 hover:ring-purple-500/20 transition-all duration-200'
+                    className='relative h-8 w-8 rounded-full'
                   >
-                    <Avatar className='h-10 w-10 cursor-pointer border-2 border-transparent hover:border-purple-300 transition-all duration-200'>
-                      <AvatarFallback className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-semibold text-sm transition-all duration-200'>
+                    <Avatar className='h-8 w-8 cursor-pointer'>
+                      <AvatarFallback className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white'>
                         {user.formData
                           .find(
                             (f): f is { marker: 'name'; value: string } =>
@@ -164,10 +150,10 @@ export default function Navbar() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className='w-64 p-2 bg-white/95 backdrop-blur-sm border border-gray-200/50 shadow-xl rounded-xl' align='end' forceMount>
-                  <DropdownMenuLabel className='font-normal p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg mb-2'>
-                    <div className='flex flex-col space-y-2'>
-                      <p className='text-sm font-semibold leading-none bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
+                <DropdownMenuContent className='w-56 ' align='end' forceMount>
+                  <DropdownMenuLabel className='font-normal'>
+                    <div className='flex flex-col space-y-1'>
+                      <p className='text-sm font-medium leading-none bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
                         {
                           user.formData.find(
                             (f): f is { marker: 'name'; value: string } =>
@@ -175,110 +161,97 @@ export default function Navbar() {
                           )?.value
                         }
                       </p>
-                      <p className='text-xs leading-none text-gray-500'>
+                      <p className='text-xs leading-none text-gray-400'>
                         {user?.identifier}
                       </p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className='bg-gradient-to-r from-purple-200 to-pink-200 h-px' />
-                  <DropdownMenuItem className='focus:bg-purple-50 focus:text-purple-700 rounded-lg my-1 cursor-pointer transition-all duration-150'>
-                    <Link href='/profile' className='flex w-full items-center py-1'>
-                      <User className='mr-3 h-4 w-4' />
-                      <span className="font-medium">Profile</span>
+                  <DropdownMenuSeparator className='bg-purple-800' />
+                  <DropdownMenuItem className='focus:text-purple-600'>
+                    <Link href='/profile' className='flex w-full'>
+                      <User className='mr-2 h-4 w-4' />
+                      <span>Profile</span>
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className='focus:bg-purple-50 focus:text-purple-700 rounded-lg my-1 cursor-pointer transition-all duration-150'>
-                    <Link href='/orders' className='flex w-full items-center py-1'>
-                      <ShoppingCart className='mr-3 h-4 w-4' />
-                      <span className="font-medium">Orders</span>
+                  <DropdownMenuItem className='focus:text-purple-600'>
+                    <Link href='/orders' className='flex w-full'>
+                      <ShoppingCart className='mr-2 h-4 w-4' />
+                      <span>Orders</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className='bg-gradient-to-r from-purple-200 to-pink-200 h-px my-2' />
+                  <DropdownMenuSeparator className='bg-purple-800' />
                   <DropdownMenuItem
-                    className='focus:bg-red-50 focus:text-red-700 rounded-lg cursor-pointer transition-all duration-150'
+                    className=' focus:text-purple-600 cursor-pointer'
                     onClick={handleLogout}
                   >
-                    <LogOut className='mr-3 h-4 w-4' />
-                    <span className="font-medium">Log out</span>
+                    <LogOut className='mr-2 h-4 w-4' />
+                    <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-
             {!user && isLoading === false && (
-              <div className='flex items-center space-x-3'>
-                <Link href='/auth?type=login'>
-                  <Button
-                    variant='outline'
-                    className='bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent border-2 border-purple-200 hover:border-purple-300 cursor-pointer px-6 py-2 rounded-full font-semibold transition-all duration-200 hover:shadow-md hover:bg-purple-50/50'
-                  >
-                    Login
-                  </Button>
-                </Link>
-                <Link href='/auth?type=signup'>
-                  <Button className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white cursor-pointer px-6 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105'>
-                    Sign Up
-                  </Button>
-                </Link>
+              <div className='flex space-x-2'>
+                <div>
+                  <Link href='/auth?type=login'>
+                    <Button
+                      variant='outline'
+                      className='bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent border-2 border-gray-300 cursor-pointer'
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                </div>
+                <div>
+                  <Link href='/auth?type=signup'>
+                    <Button className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white cursor-pointer'>
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
               </div>
             )}
           </div>
-
-          {/* Mobile Menu Button */}
           <div className='md:hidden flex items-center'>
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-              aria-label="Toggle mobile menu"
-            >
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? (
-                <X className='h-6 w-6 text-gray-600' />
+                <X className='h-6 w-6 text-gray-300' />
               ) : (
-                <Menu className='h-6 w-6 text-gray-600' />
+                <Menu className='h-6 w-6 text-gray-300' />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div ref={mobileMenuRef} className='md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200/50 shadow-lg'>
-          <div className='px-4 pt-4 pb-3 space-y-3'>
-            
-            {/* Mobile Search */}
+        <div ref={mobileMenuRef} className='md:hidden bg-gray-100'>
+          <div className='px-2 pt-2 pb-3 space-y-1 sm:px-3'>
             <form onSubmit={handleSearch} className='mb-4'>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type='text'
-                  placeholder='Search products...'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className='bg-gray-50 border-gray-200 pl-10 pr-4 py-3 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-400 transition-all duration-200'
-                />
-              </div>
+              <Input
+                type='text'
+                placeholder='Search products...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='bg-white  '
+              />
             </form>
 
-            {/* Mobile Cart Link */}
             <Link
               href='/cart'
-              className='flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-200 group'
+              className='block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-white hover:bg-purple-500'
               onClick={handleMenuItemClick}
             >
-              <ShoppingCart className='mr-3 h-5 w-5 group-hover:text-white' />
-              <span>Cart</span>
+              Cart
             </Link>
           </div>
-
-          {/* Mobile User Section */}
-          <div className='border-t border-gray-200/50 pt-4 pb-3'>
+          <div className='border-t border-gray-700 pt-4 pb-3'>
             {user && (
-              <div className='flex items-center px-5 mb-4 p-3 mx-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl'>
+              <div className='flex items-center px-5 mb-3'>
                 <div className='flex-shrink-0'>
-                  <Avatar className='h-12 w-12 border-2 border-purple-200'>
-                    <AvatarFallback className='bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-semibold'>
+                  <Avatar className='h-8 w-8 border-2 border-gray-700'>
+                    <AvatarFallback>
                       {user.formData
                         .find(
                           (f): f is { marker: 'name'; value: string } =>
@@ -288,8 +261,8 @@ export default function Navbar() {
                     </AvatarFallback>
                   </Avatar>
                 </div>
-                <div className='ml-4'>
-                  <div className='text-base font-semibold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
+                <div className='ml-3'>
+                  <div className='text-base font-medium bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 bg-clip-text text-transparent'>
                     {
                       user.formData.find(
                         (f): f is { marker: 'name'; value: string } =>
@@ -303,53 +276,45 @@ export default function Navbar() {
                 </div>
               </div>
             )}
-            
             {user ? (
-              <div className='mt-3 px-4 space-y-2'>
+              <div className='mt-3 px-2 space-y-1'>
                 <Link
                   href='/profile'
-                  className='flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-200 group'
+                  className='block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-white hover:bg-purple-500'
                   onClick={handleMenuItemClick}
                 >
-                  <User className='mr-3 h-5 w-5 group-hover:text-white' />
-                  <span>Your Profile</span>
+                  Your Profile
                 </Link>
 
                 <Link
                   href='/orders'
-                  className='flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-200 group'
+                  className='block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-white hover:bg-purple-500'
                   onClick={handleMenuItemClick}
                 >
-                  <ShoppingCart className='mr-3 h-5 w-5 group-hover:text-white' />
-                  <span>Orders</span>
+                  Orders
                 </Link>
-                
                 <button
                   onClick={handleLogout}
-                  className='flex items-center w-full px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 transition-all duration-200 cursor-pointer group'
+                  className='block px-3 py-2 rounded-md text-base font-medium text-gray-500 hover:text-white hover:bg-purple-500 w-full text-left cursor-pointer'
                 >
-                  <LogOut className='mr-3 h-5 w-5 group-hover:text-white' />
-                  <span>Log out</span>
+                  Log out
                 </button>
               </div>
             ) : (
-              <div className='mt-3 px-4 space-y-2'>
+              <div className='mt-3 px-2 space-y-1'>
                 <Link
                   href='/auth?type=login'
-                  className='flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-200 group'
+                  className='block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-purple-500'
                   onClick={handleMenuItemClick}
                 >
-                  <User className='mr-3 h-5 w-5 group-hover:text-white' />
-                  <span>Login</span>
+                  Login
                 </Link>
-                
                 <Link
                   href='/auth?type=signup'
-                  className='flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-600 hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 transition-all duration-200 group'
+                  className='block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-purple-500'
                   onClick={handleMenuItemClick}
                 >
-                  <User className='mr-3 h-5 w-5 group-hover:text-white' />
-                  <span>Sign Up</span>
+                  Sign Up
                 </Link>
               </div>
             )}
@@ -357,5 +322,5 @@ export default function Navbar() {
         </div>
       )}
     </nav>
-  )
+  );
 }
