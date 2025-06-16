@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🛒 E-Commerce Website
+A modern, responsive e-commerce web application built with React.js, Tailwind CSS, and Shadcn, featuring seamless user authentication and inventory management via OneEntry APIs. This project provides a full shopping experience including product search, cart management, order tracking, and related product suggestions.
 
-## Getting Started
+🚀 Features
+🔐 User Authentication
+Uses OneEntry's authentication service to handle user sign-up, login, and secure session management.
 
-First, run the development server:
+📦 Inventory Management
+Dynamically fetches and updates product inventory using OneEntry Inventory APIs.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🛍️ Product Catalog
+Users can browse products by category, view detailed product pages, and see related product recommendations.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+🛒 Cart Functionality
+Add, remove, and update products in the cart with real-time price calculations.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📦 Order Tracking
+View past orders and order statuses linked to the authenticated user.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🔎 Search
+Product search with instant results filtering.
 
-## Learn More
+💅 Modern UI
+Built with Tailwind CSS and Shadcn for a clean, accessible, and responsive user experience.
 
-To learn more about Next.js, take a look at the following resources:
+🧱 Tech Stack
+Frontend: React.js, Tailwind CSS, Shadcn
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Authentication: OneEntry Auth API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Backend Services: OneEntry Inventory & User APIs
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deployment: click-n-cart-xi.vercel.app/
